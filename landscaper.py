@@ -89,21 +89,21 @@ def upgrade():
             return 0           
 
 def build_upgrade_msg():    
-    work_player_upgrade_options = f"Money available: ${game['money']}. "
+    print(f"Money available: ${game['money']}. Purchase options below:")
     tool_name = ""
-
+    tool_cost = ""
     i = 1
     while (i <= (game['tool'] + 1)): 
         tool_name = tools[i]['name']
         tool_cost = tools[i]['cost']
         if (game['money'] >= tool_cost):
-            work_player_upgrade_options = work_player_upgrade_options + f"[{i}] Buy {tool_name} for ${tool_cost} " 
+            print(f"  [{i}] Buy {tool_name} for ${tool_cost}") 
             game['highest_purchase_option'] = i
         i += 1 
                   
-    work_player_upgrade_options = work_player_upgrade_options + "[N] No purchase ==>  " 
+    print("  [N] No purchase") 
             
-    return work_player_upgrade_options
+    return ("Select option ==> ")
     
 def win_check():
     if (game["tool"] == 4 and game["money"] > 999):
