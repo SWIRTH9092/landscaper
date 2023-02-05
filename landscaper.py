@@ -2,7 +2,7 @@
 ##    Variables - Game State 
 ##############################
 
-game = {"tool": 0, "money": 0, "tip_this_time": 0}
+game = {"tool": 0, "money": 0, "tip_this_time": 0, "highest_purchase_option":0}
 
 tools = [
     {"name": "teeth", "profit": 1, "cost": 0, "tool_count": 1, "tip_low": 0, "tip_high": 2},
@@ -11,6 +11,8 @@ tools = [
     {"name": "battery powered lawn mower", "profit": 100, "cost": 250, "tool_count": 0, "tip_low": 0, "tip_high": 25},
     {"name": "team", "profit": 250, "cost": 500, "tool_count": 0, "tip_low": 0, "tip_high": 100}
 ]
+
+user_reply_purchase = ""
 
 ##############################
 ## Game Option Functions 
@@ -35,39 +37,53 @@ def check_stats():
     print(f"You currently have ${game['money']} and are using the tool: {tool['name']}.")
 
 def upgrade():
-    
-    player_Upgrade_options = ""
     while (True):
-        affordable_option = 0
-        if (game["tool"] == 0):
-            if (tools[1]['cost'] > game['money']):
-                print(" ")
-                print(f"Not enough money to buy a tool.  Money you have is: ${game['money']}. Money needed for next tool: '{tools[1]['name']}' is ${tools[1]['cost']}.")
-                return 0
-            else:
-               affordable_option = 1
-               print(" ")
-               user_reply = input("[1] Buy Scissors [N] Do Not Buy  ==> ")  
-            
-        if (len(user_reply) == 0):
+        if (tools[1]['cost'] > game['money']):
+            print(" ")
+            print(f"Not enough money to buy a tool.  Money you have is: ${game['money']}. Money needed for tool: '{tools[1]['name']}' is ${tools[1]['cost']}.")
+            return 0
+        else:     
+            user_reply_purchase = input(build_upgrade_msg())
+        
+        if (len(user_reply_purchase) == 0):
             print("No purchase Option Selected.")
             return 0
-        elif (user_reply == "N" or user_reply == "n"):
+        
+        if (user_reply_purchase == "N" or user_reply_purchase == "n"):
             print("No purchase made.")
-            return 0           
-        elif (user_reply.isnumeric() == True and int(user_reply) <= len([tools])):
-            user_reply = int(user_reply)
-            print("user_reply", user_reply)
-            print("length of array", len([tools]))
-            print("affordable_option", affordable_option)
-            game["money"] -= tools[user_reply]["cost"]
-            tools[user_reply]["tool_count"] += 1
-            print(f"Purchased tool: {tools[user_reply]['name']} for ${tools[user_reply]['cost']}.  Money left: ${game['money']}")
-            print(f"{tools[user_reply]}")
-            return 0   
+            return 0    
+               
+        if (user_reply_purchase.isnumeric() == True and int(user_reply_purchase) <= len(tools)):
+            user_reply_purchase = int(user_reply_purchase)
+            if (user_reply_purchase > game['highest_purchase_option']):
+                print(f"Invalid Purchase Option Input: {user_reply_purchase}.") 
+                return 0  
+            else:               
+                game["money"] -= tools[user_reply_purchase]["cost"]
+                tools[user_reply_purchase]["tool_count"] += 1
+                print(f"Purchased tool: {tools[user_reply_purchase]['name']} for ${tools[user_reply_purchase]['cost']}.  Money left: ${game['money']}")
+                if (user_reply_purchase > game['tool']):
+                    game['tool'] = user_reply_purchase
+                return 0   
         else:
-            print(f"Invalid Purchase Option Input: {user_reply}.") 
+            print(f"Invalid Purchase Option Input: {user_reply_purchase}.") 
             return 0           
+
+def build_upgrade_msg():    
+    work_player_upgrade_options = f"Money available: ${game['money']}. "
+    tool_name = ""
+
+    i = 1
+    while (i <= (game['tool'] + 1)): 
+        tool_name = tools[i]['name']
+        tool_cost = tools[i]['cost']
+        work_player_upgrade_options = work_player_upgrade_options + f"[{i}] Buy {tool_name} for ${tool_cost} " 
+        game['highest_purchase_option'] = i
+        i += 1 
+                  
+    work_player_upgrade_options = work_player_upgrade_options + "[N] No purchase ==>  " 
+            
+    return work_player_upgrade_options
     
 def win_check():
     if (game["tool"] == 4 and game["money"] > 999):
