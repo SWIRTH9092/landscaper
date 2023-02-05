@@ -52,32 +52,57 @@ def upgrade():
     
 def win_check():
     if (game["tool"] == 4 and game["money"] > 999):
+        print(" ")
         print("👏 👏 👏 You Win  👏 👏 👏")
+        print(" ")
         return True
     return False
 
+def reset_game():
+        user_check = input("Do you want to reset game? Y or N ==> ")
+        if (user_check == 'Y' or user_check =='y'):
+            game["tool"] = 0
+            game["money"] = 0
+            game["tip_this_time"] = 0
+            print(" ")
+            print("Game Reset")
+        else:
+            print(" ")
+            print ("Reset response not equal to 'Y' or 'y'. Reset not completed.")
+
 while (True):
-    print (" ")        
-    user_reply = input("[1] Cut Grass [2] Check Stats [3] Upgrade [4] Quit ==> ")
+    print (" ")   
+    reply_processed = False     
+    user_reply = input("[1] Cut Grass [2] Check Stats [3] Upgrade [4] Reset Game [5] Quit ==> ")
     
-    user_reply = int(user_reply)
-   
-            
-    if (user_reply == 1):
-       cut_grass()
+    if (len(user_reply) == 0):
+        print("No option selected.  Try again.")
+        reply_processed = True
+               
+    if (user_reply == "1"):
+        cut_grass()
+        reply_processed = True
        
-    if (user_reply == 2):
-       check_stats()
+    if (user_reply == "2"):
+        check_stats()
+        reply_processed = True
        
-    if (user_reply == 3):
-       upgrade()  
+    if (user_reply == "3"):
+        upgrade()  
+        reply_processed = True
          
-    if (user_reply == 4):
-       print ("You quit the game 😢")
-       break 
+    if (user_reply == "4"):
+        reset_game() 
+        reply_processed = True
    
-    if (user_reply > 4):
-       print ("invalid choice") 
+    if (user_reply == "5"):
+        print ("You quit the game 😢 😢 😢  Come back again.")
+        print(" ")
+        reply_processed = True
+        break 
+   
+    if (reply_processed == False):
+        print ("invalid choice") 
        
     if (win_check() == True):
-       break 
+        break
