@@ -19,23 +19,42 @@ user_reply_purchase = ""
 ##############################
 
 def cut_grass():
-    tool = tools[game["tool"]]
-    print(f"Landscape can use {tool['name']} to cut grass and make ${tool['profit']}.")
-    random_tip(tool['tip_low'],tool['tip_high'])
-    game["money"] += tool['profit']
+    money = 0
+    work_tips = 0
+    tips = 0   
+    
+    ## if game tool > 0, don't count teeth - otherwise count it. 
+    i = 0  
+    if (game['tool'] > 0):
+        i = 1
+    
+    while (i < len(tools)):
+        if (tools[i]['tool_count'] > 0):
+            money = money + (tools[i]['tool_count'] * tools[i]['profit'])
+            tips = tips + random_tip(tools[i]['tip_low'], tools[i]['tip_high'])
+        i += 1
+                  
+    print(f"Landscaper uses tools to cut grass and make profit of ${money} and tips of ${tips} for total of ${money + tips}.")
+    game["tip_this_time"] = tips
+    game["money"] += money + tips
         
 import random     
 def random_tip(low, high):
+    work_tip = 0
     if (random.randint(0,1) > 0):
-        game["tip_this_time"] = random.randint(low, high)
-        if (game["tip_this_time"] > 0):
-            game["money"] += game['tip_this_time']
-            print (f"Your hard work paid off.  You earned a tip of: ${game['tip_this_time']}.")   
+        work_tip = random.randint(low, high)
+        return work_tip
+    return 0
     
 def check_stats():
-    tool = tools[game["tool"]]
-    print(f"You currently have ${game['money']} and are using the tool: {tool['name']}.")
-
+    print(" ") 
+    print(f"You currently have ${game['money']} and the following tools:")
+    print(f"  {tools[1]['tool_count']} - {tools[1]['name']}")      
+    print(f"  {tools[2]['tool_count']} - {tools[2]['name']}")  
+    print(f"  {tools[3]['tool_count']} - {tools[3]['name']}") 
+    print(f"  {tools[4]['tool_count']} - {tools[4]['name']}") 
+    print(" ")  
+    
 def upgrade():
     while (True):
         if (tools[1]['cost'] > game['money']):
@@ -77,8 +96,9 @@ def build_upgrade_msg():
     while (i <= (game['tool'] + 1)): 
         tool_name = tools[i]['name']
         tool_cost = tools[i]['cost']
-        work_player_upgrade_options = work_player_upgrade_options + f"[{i}] Buy {tool_name} for ${tool_cost} " 
-        game['highest_purchase_option'] = i
+        if (game['money'] >= tool_cost):
+            work_player_upgrade_options = work_player_upgrade_options + f"[{i}] Buy {tool_name} for ${tool_cost} " 
+            game['highest_purchase_option'] = i
         i += 1 
                   
     work_player_upgrade_options = work_player_upgrade_options + "[N] No purchase ==>  " 
@@ -99,6 +119,7 @@ def reset_game():
             game["tool"] = 0
             game["money"] = 0
             game["tip_this_time"] = 0
+            game["highest_purchase_option"] = 0
             print(" ")
             print("Game Reset")
         else:
