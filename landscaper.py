@@ -5,11 +5,11 @@
 game = {"tool": 0, "money": 0, "tip_this_time": 0}
 
 tools = [
-    {"name": "teeth", "profit": 1, "cost": 0, "own": 0, "tip_low": 0, "tip_high": 2},
-    {"name": "rusty scissors", "profit": 5, "cost": 5, "own": 0, "tip_low": 0, "tip_high": 6},
-    {"name": "old-timey lawn mower", "profit": 50, "cost": 25, "own": 0, "tip_low": 0, "tip_high": 15},    
-    {"name": "battery powered lawn mower", "profit": 100, "cost": 250, "own": 0, "tip_low": 0, "tip_high": 25},
-    {"name": "team", "profit": 250, "cost": 500, "own": 0, "tip_low": 0, "tip_high": 100}
+    {"name": "teeth", "profit": 1, "cost": 0, "tool_count": 1, "tip_low": 0, "tip_high": 2},
+    {"name": "rusty scissors", "profit": 5, "cost": 5, "tool_count": 0, "tip_low": 0, "tip_high": 6},
+    {"name": "old-timey lawn mower", "profit": 50, "cost": 25, "tool_count": 0, "tip_low": 0, "tip_high": 15},    
+    {"name": "battery powered lawn mower", "profit": 100, "cost": 250, "tool_count": 0, "tip_low": 0, "tip_high": 25},
+    {"name": "team", "profit": 250, "cost": 500, "tool_count": 0, "tip_low": 0, "tip_high": 100}
 ]
 
 ##############################
@@ -35,20 +35,39 @@ def check_stats():
     print(f"You currently have ${game['money']} and are using the tool: {tool['name']}.")
 
 def upgrade():
-    if (game["tool"] >= len(tools)):
-        print ("no more upgrades avaialable.")
     
-    next_tool = tools[game["tool"] + 1 ]
-    
-    if(next_tool == None):
-        print("There is no more tools")
-        return 0   ## kill the function
-    if(game["money"] < next_tool["cost"]):   
-        print(f"Not enough money to buy tool.  Money have: ${game['money']}. Money needed: ${next_tool['cost']}.")  
-        return 0 
-    game["money"] -= next_tool["cost"]
-    print(f"You bought: {next_tool['name']}.  Money you have now: ${game['money']}.")  
-    game["tool"] += 1
+    player_Upgrade_options = ""
+    while (True):
+        affordable_option = 0
+        if (game["tool"] == 0):
+            if (tools[1]['cost'] > game['money']):
+                print(" ")
+                print(f"Not enough money to buy a tool.  Money you have is: ${game['money']}. Money needed for next tool: '{tools[1]['name']}' is ${tools[1]['cost']}.")
+                return 0
+            else:
+               affordable_option = 1
+               print(" ")
+               user_reply = input("[1] Buy Scissors [N] Do Not Buy  ==> ")  
+            
+        if (len(user_reply) == 0):
+            print("No purchase Option Selected.")
+            return 0
+        elif (user_reply == "N" or user_reply == "n"):
+            print("No purchase made.")
+            return 0           
+        elif (user_reply.isnumeric() == True and int(user_reply) <= len([tools])):
+            user_reply = int(user_reply)
+            print("user_reply", user_reply)
+            print("length of array", len([tools]))
+            print("affordable_option", affordable_option)
+            game["money"] -= tools[user_reply]["cost"]
+            tools[user_reply]["tool_count"] += 1
+            print(f"Purchased tool: {tools[user_reply]['name']} for ${tools[user_reply]['cost']}.  Money left: ${game['money']}")
+            print(f"{tools[user_reply]}")
+            return 0   
+        else:
+            print(f"Invalid Purchase Option Input: {user_reply}.") 
+            return 0           
     
 def win_check():
     if (game["tool"] == 4 and game["money"] > 999):
@@ -73,7 +92,7 @@ def reset_game():
 while (True):
     print (" ")   
     reply_processed = False     
-    user_reply = input("[1] Cut Grass [2] Check Stats [3] Upgrade [4] Reset Game [5] Quit ==> ")
+    user_reply = input("[1] Cut Grass [2] Check Stats [3] Upgrade [4] Reset Game [Q] Quit ==> ")
     
     if (len(user_reply) == 0):
         print("No option selected.  Try again.")
@@ -95,14 +114,14 @@ while (True):
         reset_game() 
         reply_processed = True
    
-    if (user_reply == "5"):
+    if (user_reply == "Q" or user_reply == "q"):
         print ("You quit the game 😢 😢 😢  Come back again.")
         print(" ")
         reply_processed = True
         break 
    
     if (reply_processed == False):
-        print ("invalid choice") 
+        print ("Invalid choice. Try again.") 
        
     if (win_check() == True):
         break
