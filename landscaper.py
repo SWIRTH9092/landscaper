@@ -18,6 +18,18 @@ user_reply_purchase = ""
 ## Game Option Functions 
 ##############################
 
+##############################
+##  Function - Cut the Grass
+##    Note:  if tools bought, teeth is no longer
+##           counted in future grass cuttings
+##    - call the Tip calculation Function.  For the
+##      tool sends the tip_low and tip_high
+##    - Calculates profit and tips
+##    - Updates Game money and tips
+##    - Prints message of amount earned
+##############################
+
+
 def cut_grass():
     money = 0
     work_tips = 0
@@ -37,7 +49,16 @@ def cut_grass():
     print(f"Landscaper uses tools to cut grass and make profit of ${money} and tips of ${tips} for total of ${money + tips}.")
     game["tip_this_time"] = tips
     game["money"] += money + tips
-        
+
+##############################
+##  Function - calculate Tips
+##    - paramaters(low_tip_amount, high_tip_amount)
+##    - 1st randomn call checks to see
+##      if tips should be calculated
+##    - 1st randomn = 1 
+##      - calculate tip based on low and high
+##    - returns tip
+##############################        
 import random     
 def random_tip(low, high):
     work_tip = 0
@@ -45,7 +66,11 @@ def random_tip(low, high):
         work_tip = random.randint(low, high)
         return work_tip
     return 0
-    
+ 
+##############################
+##  Function - checks tools owned stats
+##    - prints tools count and name (doesn't print teeth)
+################################      
 def check_stats():
     print(" ") 
     print(f"You currently have ${game['money']} and the following tools:")
@@ -54,7 +79,15 @@ def check_stats():
     print(f"  {tools[3]['tool_count']} - {tools[3]['name']}") 
     print(f"  {tools[4]['tool_count']} - {tools[4]['name']}") 
     print(" ")  
-    
+
+##############################
+##  Function - upgrade
+##    - sees if there is enough money to buy at least level 1 tool
+##    - calls function build_upgrade_msg to print out the options 
+##      for upgrade
+##    - sends input mesage to console
+##    - process upgrade option selected
+##############################      
 def upgrade():
     while (True):
         if (tools[1]['cost'] > game['money']):
@@ -62,8 +95,10 @@ def upgrade():
             print(f"Not enough money to buy a tool.  Money you have is: ${game['money']}. Money needed for tool: '{tools[1]['name']}' is ${tools[1]['cost']}.")
             return 0
         else:     
+            ## get options for upgrade
             user_reply_purchase = input(build_upgrade_msg())
-        
+            
+        ##process upgrade options
         if (len(user_reply_purchase) == 0):
             print("No purchase Option Selected.")
             return 0
@@ -88,6 +123,12 @@ def upgrade():
             print(f"Invalid Purchase Option Input: {user_reply_purchase}.") 
             return 0           
 
+##############################
+##  Function - build upgrade message
+##    - prints message for money available
+##    - for each tool where the money >= cost
+##       prints as an option
+############################## 
 def build_upgrade_msg():    
     print(f"Money available: ${game['money']}. Purchase options below:")
     tool_name = ""
@@ -104,7 +145,11 @@ def build_upgrade_msg():
     print("  [N] No purchase") 
             
     return ("Select option ==> ")
-    
+
+##############################
+##  Function - win_check
+##    - checks to see if player has won the game
+##############################     
 def win_check():
     if (game["tool"] == 4 and game["money"] > 999):
         print(" ")
@@ -113,6 +158,9 @@ def win_check():
         return True
     return False
 
+##############################
+##  Function - reset the game
+############################## 
 def reset_game():
         user_check = input("Do you want to reset game? Y or N ==> ")
         if (user_check == 'Y' or user_check =='y'):
@@ -120,12 +168,20 @@ def reset_game():
             game["money"] = 0
             game["tip_this_time"] = 0
             game["highest_purchase_option"] = 0
+            tools[1]['tool_count'] = 0
+            tools[2]['tool_count'] = 0
+            tools[3]['tool_count'] = 0
+            tools[4]['tool_count'] = 0
             print(" ")
             print("Game Reset")
         else:
             print(" ")
             print ("Reset response not equal to 'Y' or 'y'. Reset not completed.")
 
+##############################
+##  Main module
+##   - processes input options
+############################## 
 while (True):
     print (" ")   
     reply_processed = False     
